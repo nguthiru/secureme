@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,13 +40,19 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'rest_auth',
+    'rest_framework.authtoken',
+    'allauth',
+    'allauth.account',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+
+
     #third-party
     'users',
     'station',
     'analytics'
 ]
-    
+SITEID=1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -86,8 +93,22 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+JAZZMIN_SETTINGS = {
+        # title of the window (Will default to current_admin_site.site_title if absent or None)
+    "site_title": "SecureMe Admin",
+
+    # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+    "site_header": "SecureMe",
+
+    # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+    "site_brand": "SecureMe",
 
 
+}
+JAZZMIN_SETTINGS["show_ui_builder"] = True
+JAZZMIN_UI_TWEAKS = {
+    "theme": "darkly",
+}
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -107,6 +128,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
