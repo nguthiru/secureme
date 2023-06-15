@@ -144,6 +144,11 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "nguthiruedwin@gmail.com"
+EMAIL_HOST_PASSWORD = "gwibfwtzvotreugx"
 
 
 # Static files (CSS, JavaScript, Images)

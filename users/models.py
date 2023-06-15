@@ -48,3 +48,26 @@ def approve_user(sender, instance, created, **kwargs):
         instance.user.save()
         #send email to user
         send_approval_email(instance.user)
+
+
+class PasswordReset(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    reset_code = models.IntegerField()
+    is_valid = models.BooleanField(default=False)
+    code_used = models.BooleanField(default=False)
+    date_requested = models.DateTimeField(auto_now_add=True)
+    grant_token = models.CharField(max_length=255,default="")
+
+    def __str__(self) -> str:
+        return self.user.email
+
+class ValidationEmailCodes(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    code = models.IntegerField()
+    code_used = models.BooleanField(default=False)
+    is_valid = models.BooleanField(default=False)
+    date_requested = models.DateTimeField(auto_now_add=True)
+    grant_token = models.CharField(max_length=255,default="")
+
+    def __str__(self) -> str:
+        return self.user.email

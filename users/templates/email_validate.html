@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <title>Activate Account</title>
+
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins',sans-serif;
+        }
+        body{
+            margin: 1.2em;
+        }
+        .padding-block{
+            margin: 1.2em 0;
+        }
+        #exp-msg{
+            font-size: small;
+        }
+        #ignore{
+            font-size: small;
+            color: red;
+        }
+        p em{
+            font-style: normal;
+            font-weight: bold;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <p>Hello, <em></em></p>
+    <div class="padding-block">
+        <p>Activate Your Account</p>
+        <p>Verify your email to continue using the application</p>
+    </div>
+    <div class="padding-block">
+        <p>To activate your account, use the code below</p>
+        <h1 id="reset-code">{{code}}</h1>
+
+
+    </div>
+    <p id="exp-msg">Code expires in 10 minutes</p>
+    <div class="padding-block" id="ignore">
+        <p>Kindly ignore if you did not make a request</p>
+    </div>
+
+
+</body>
+
+</html>

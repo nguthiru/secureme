@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from users.models import CustomUser,ApprovalRequests,Station
+from users.models import *
 
 # Register your models here.
-admin.site.register([CustomUser,ApprovalRequests,Station])
+admin.site.register([CustomUser,ApprovalRequests,Station,PasswordReset,ValidationEmailCodes])
