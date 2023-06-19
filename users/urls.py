@@ -3,7 +3,7 @@ from .views import *
 urlpatterns = [
     path('login/',login_view,name='login'),
     path('approval-request/',approval_request_view,name='approval-request'),
-    path('', include('dj_rest_auth.urls')),
+    # path('', include('dj_rest_auth.urls')),
     path('register/', register, name='register'),
     path('activate/email/', validate_email_activate_account, name='activate'),
     path('activate/email/resend/', resend_validation_email, name='resend'),

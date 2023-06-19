@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser,BaseUserManager,AbstractBaseUser,PermissionsMixin
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -16,8 +16,25 @@ class Station(models.Model):
     def __str__(self) -> str:
         return self.name
 
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        # Normalize email address
+        email = self.normalize_email(email)
+        
+        # Create and save the user
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save()
+        
+        return user
 
-class CustomUser(AbstractUser):
+    def create_superuser(self, email, password=None, **extra_fields):
+        # Create a superuser
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        
+        return self.create_user(email, password, **extra_fields)
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     USER_TYPE_CHOICES = (
         ('police', 'Police Station'),
         ('analytics', 'Analytics Team'),
@@ -30,7 +47,9 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = ['username','approved']
     user_type = models.CharField(choices=USER_TYPE_CHOICES, max_length=10)
     station = models.OneToOneField(Station, on_delete=models.CASCADE, null=True, blank=True)
+    activated=models.BooleanField(default=False)
     # user_type = models.ForeignKey(UserRoles, on_delete=models.CASCADE,)
+    objects = CustomUserManager()
 
 class ApprovalRequests(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)

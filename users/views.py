@@ -18,7 +18,6 @@ from users.serializers import UserSerializer
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
 from datetime import datetime, timedelta
-
 # Create your views here.
 USER_MODEL = get_user_model()
 
@@ -31,7 +30,7 @@ def register(request):
     email = request.data.get("email")
     username = request.data.get("username")
 
-    if username == None or password1 == None or password2 == None or email == None:
+    if password1 == None or password2 == None or email == None:
         return Response({"error": "Fill in all required fields"}, status=400)
 
     if password1 != password2:
@@ -41,9 +40,8 @@ def register(request):
             user = USER_MODEL.objects.get(email=email)
             return Response({"error": "User already exists"}, status=400)
         except USER_MODEL.DoesNotExist:
-            user = USER_MODEL.objects.create(email=email, username=username)
+            user = USER_MODEL.objects.create(email=email)
             user.set_password(password1)
-            user.is_active = False
             user.save()
             send_validation_email(user)
             return Response(
@@ -53,35 +51,43 @@ def register(request):
                 status=201,
             )
 
+
 @api_view(["POST"])
 def validate_email_activate_account(request):
     if "code" in request.data and "email" in request.data:
         user = get_object_or_404(USER_MODEL, email=request.data.get("email"))
-        if user.is_active:
-            return Response({"error:": "Account is already active"}, status=status.HTTP_400_BAD_REQUEST)
+        if user.activated:
+            return Response(
+                {"error:": "Account is already active"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         time_threshold = datetime.now() - timedelta(minutes=14)
         code = request.data.get("code")
         validation_codes = ValidationEmailCodes.objects.filter(
-            user=user, date_requested__gt=time_threshold,code_used=False
+            user=user, date_requested__gt=time_threshold, code_used=False
         )
         validation_code = validation_codes.latest("date_requested")
         if str(code) == str(validation_code.code):
-            user.is_active = True
+            user.activated = True
             validation_code.code_used = True
             validation_code.save()
             user.save()
-            return Response({"message":"Account Activated successfully"}, status=200)
+            return Response({"message": "Account Activated successfully"}, status=200)
         else:
             return Response({"error": f"Incorrect Code entered "}, status=400)
     else:
-        return Response({"error":"Fill in all required fields"},status=400)
+        return Response({"error": "Fill in all required fields"}, status=400)
+
 
 @api_view(["POST"])
 def resend_validation_email(request):
     if "email" in request.data:
         user = get_object_or_404(USER_MODEL, email=request.data.get("email"))
-        if user.is_active:
-            return Response({"error:": "Account is already active"}, status=status.HTTP_400_BAD_REQUEST)
+        if user.activated:
+            return Response(
+                {"error": "Account is already active"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         if send_validation_email(user):
             return Response(
                 {"message": "Email sent successfully"}, status=status.HTTP_200_OK
@@ -99,27 +105,28 @@ def resend_validation_email(request):
 
 @api_view(["POST"])
 def login_view(request):
-    username = request.data.get("username")
+    email = request.data.get("email")
     password = request.data.get("password")
-    user = authenticate(request, username=username, password=password)
+    user = authenticate(email=email, password=password)
 
     if user is not None:
-        if user.approved:
-            login(request, user)
-            token, _ = Token.objects.get_or_create(user=user)
+        if not user.activated:
             return Response(
-                {
-                    "message": "Login successful.",
-                    "token": token.key,
-                    "user": UserSerializer(user).data,
-                },
-                status=status.HTTP_200_OK,
-            )
-        else:
-            return Response(
-                {"error": "Your account is not approved."},
+                {"error": "Your email address is not verified."},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+
+        login(request, user)
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response(
+            {
+                "message": "Login successful.",
+                "token": token.key,
+                "user": UserSerializer(user).data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
     else:
         return Response(
             {"error": "Invalid login credentials."}, status=status.HTTP_401_UNAUTHORIZED
@@ -166,15 +173,24 @@ def approval_request_view(request):
 def reset_password_email(request):
     if "email" in request.data:
         email = request.data.get("email")
-        user = get_object_or_404(USER_MODEL, email=email)
-
-        if send_reset_email(user):
+        try:
+            user = USER_MODEL.objects.get(email=email)
+            if send_reset_email(user):
+                return Response(
+                    {"message": "Email sent successfully", "email": user.email},
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {"error": "An error has occured"},
+                    status=status.HTTP_502_BAD_GATEWAY,
+                )
+        except CustomUser.DoesNotExist:
             return Response(
-                {"message": "Email sent successfully"}, status=status.HTTP_200_OK
-            )
-        else:
-            return Response(
-                {"error": "An error has occured"}, status=status.HTTP_502_BAD_GATEWAY
+                {
+                    "error": "There is no user asscoaited with that email please register"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
     else:
@@ -204,9 +220,11 @@ def validate_reset_code(request):
             password_reset.grant_token = grant_token
             password_reset.is_valid = True
             password_reset.save()
-            return Response({"grant_token": grant_token}, status=200)
+            return Response(
+                {"grant_token": grant_token, "email": user.email}, status=200
+            )
         else:
-            return Response(f"Incorrect Code", status=400)
+            return Response({"error": f"Incorrect Code"}, status=400)
     else:
         return Response(status=400)
 
