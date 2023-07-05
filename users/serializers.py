@@ -11,4 +11,4 @@ class UserSerializer(ModelSerializer):
     station = StationSerializer(read_only=True)
     class Meta:
         model = CustomUser
-        fields = ['email','username','user_type','station','approved']
+        fields = ['email','user_type','station','approved']

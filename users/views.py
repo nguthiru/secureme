@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import AnonymousUser
 from rest_framework.authtoken.models import Token
 from users.emails import send_reset_email, send_validation_email
 from users.models import (
@@ -255,3 +256,16 @@ def reset_password(request, grant_token):
             return Response({"error": "Passwords do not match"}, status=400)
     else:
         return Response({"error": "Some fields are missing"}, status=400)
+
+
+@api_view(['GET'])
+def get_user(request):
+
+    user = request.user
+    if user.is_authenticated:
+        return Response(UserSerializer(user).data, status=200)
+
+    else:
+        return Response(
+            {"error": "Invalid Token."}, status=status.HTTP_401_UNAUTHORIZED
+        )

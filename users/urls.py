@@ -10,5 +10,6 @@ urlpatterns = [
     path('password/reset/email/',reset_password_email,name='reset-password-email'),
     path('password/reset/verify/',validate_reset_code,name='verify-reset-code'),
     path('password/reset/<str:grant_token>/',reset_password,name='reset-password'),
+    path('user/',get_user,name='get-user'),
 
 ]
