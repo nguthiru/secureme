@@ -136,33 +136,56 @@ def login_view(request):
 
 @api_view(["POST"])
 def approval_request_view(request):
-    user_email = request.data.get("email")
     station = request.data.get("station")
-
-    if user_email is None or station is None:
+    police_id = request.data.get("police_id")
+    work_id = request.data.get("work_id")
+    user_type = request.data.get("user_type")
+    print(user_type)
+    if user_type is None:
         return Response(
-            {"error": "Please provide email and station."},
+            {"error": "Please provide your user type."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if user_type == 'P' and (police_id is None or station is None):
+        return Response(
+            {"error": "Please provide your police and station."},
             status=status.HTTP_400_BAD_REQUEST,
         )
-    user = CustomUser.objects.get(email=user_email)
-    station = Station.objects.get(id=station)
+    if user_type == 'A' and work_id is None:
+        return Response(
+            {"error": "Please provide your work id."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    user = request.user
 
-    if user is not None:
-        if user.approved:
-            return Response(
-                {"error": "User is already approved."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        else:
-            return Response(
-                {"error": "User approval is pending."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+
+    
+    if user.approved:
+        return Response(
+            {"error": "User is already approved."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    
+        
     else:
-        approval_request = ApprovalRequests.objects.create(user=user, station=station)
+        previous_requests = ApprovalRequests.objects.filter(user=user).first()
+        if previous_requests is not None:
+            return Response(
+                {"error": "You have already sent an approval request."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if user_type == 'P':
+            station = Station.objects.get(id=station)
+
+            approval_request = ApprovalRequests.objects.create(user=user, station=station,user_type='police')
+
+        elif user_type == 'A':
+            approval_request = ApprovalRequests.objects.create(user=user, user_type='analytics',work_id=work_id)
+
         return Response(
             {
-                "message": "The user has been approved",
+                "message": "Your approval request has been sent.",
                 "approval": {"id": approval_request.id},
             },
             status=status.HTTP_200_OK,
@@ -269,3 +292,4 @@ def get_user(request):
         return Response(
             {"error": "Invalid Token."}, status=status.HTTP_401_UNAUTHORIZED
         )
+    

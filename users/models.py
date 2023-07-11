@@ -86,6 +86,8 @@ class ApprovalRequests(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     date_added = models.DateTimeField(auto_now_add=True)
     station = models.ForeignKey(Station, on_delete=models.CASCADE, null=True, blank=True)
+    user_type = models.CharField(choices=CustomUser.USER_TYPE_CHOICES, max_length=10,default='analytics')
+    work_id = models.CharField(max_length=255,null=True,blank=True)
     approve = models.BooleanField(default=False)
     def __str__(self) -> str:
         return self.user.email
@@ -93,7 +95,8 @@ class ApprovalRequests(models.Model):
 def approve_user(sender, instance, created, **kwargs):
     if instance.approve:
         instance.user.approved = True
-        if instance.user.user_type == 'police':
+        instance.user.user_type = instance.user_type
+        if instance.user_type == 'police':
             instance.user.station = instance.station
         instance.user.save()
         #send email to user

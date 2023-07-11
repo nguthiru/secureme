@@ -24,10 +24,10 @@ SECRET_KEY = 'django-insecure-$9f+_afov7!k@zf=z=-v++nw84nmur%dsr8w)7w#$5gf5c0z2g
 
 from neomodel import config
 
-AURA_PASS = "_AWmEDjPlIqKqDYny0-GAoO0S4MP45S5lsAvAWcQUNA"
+AURA_PASS = "secureme123"
 AURA_USER = "neo4j"
-AURA_URL = "4bd3540e.databases.neo4j.io"
-config.DATABASE_URL = f'neo4j+s://{AURA_USER}:{AURA_PASS}@{AURA_URL}:7687'  # default
+AURA_URL = "localhost"
+config.DATABASE_URL = f'bolt://{AURA_USER}:{AURA_PASS}@{AURA_URL}:7687'  # default
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -103,7 +103,7 @@ DATABASES = {
         'NAME': 'secureme',
         'USER': 'secureme',
         'PASSWORD': 'secureme',
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': '5432',
     }
 }
