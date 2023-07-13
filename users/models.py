@@ -28,7 +28,7 @@ def create_station_graph(sender, instance, created, **kwargs):
     if created:
         query = """
         
-        CREATE (a:Station {location: point({x: $longitude, y: $latitude}), name: $name, entity_id: $entity_id})
+            CREATE (a:Station {longitude:$longitude, latitude:$latitude, name: $name, entity_id: $entity_id})
 
         """
         results, meta = db.cypher_query(query, {'longitude':instance.location.x,'latitude':instance.location.y,'entity_id':instance.id,'name':instance.name}, resolve_objects=True)
