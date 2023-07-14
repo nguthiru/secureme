@@ -25,7 +25,33 @@ def get_all_crime_arrests(request):
         station_entity = StationEntity.inflate(node[1])
         res = {
             "criminal": criminal_entity.__dict__(),
-            "station_entity": station_entity.__dict__(),
+            "station": station_entity.__dict__(),
+        }
+        response.append(res)
+
+    return Response(response)
+@api_view(["POST"])
+def get_crime_arrests_filtered_by_crime(request):
+    # cypher query to get criminal arrest details in respect to crime, a list of crimes to filter with will be provided in request.data and station
+
+    query = """
+
+    MATCH (s:Station)-[:ARRESTED]->(c:Criminal)-[ar:COMMITTED]->(cr:Crime)
+    WHERE cr.entity_id IN $crimes
+    RETURN c, s
+    """
+
+    crimes = request.data["crimes"]
+    params = {"crimes": crimes}
+    results, _meta = db.cypher_query(query, params)
+    print(results)
+    response = []
+    for node in results:
+        criminal_entity = CriminalEntity.inflate(node[0])
+        station_entity = StationEntity.inflate(node[1])
+        res = {
+            "criminal": criminal_entity.__dict__(),
+            "station": station_entity.__dict__(),
         }
         response.append(res)
 
@@ -127,6 +153,34 @@ def get_criminal_arrests_details(request, criminal_id):
             "criminal": criminal_entity.__dict__(),
             "station": station_entity.__dict__(),
             "crime": crime_entity.__dict__(),
+        }
+        response.append(res)
+
+    return Response(response)
+@api_view(["GET"])
+def criminal_accomplice_network(request,criminal_id):
+    query ="""
+    
+        MATCH (c:Criminal {id_num: $criminalId})-[:ACCOMPLICE*1..2]-(accomplice:Criminal)
+        OPTIONAL MATCH (c)-[:COMMITTED]->(cr:Crime)
+        WITH collect(DISTINCT c) + collect(DISTINCT accomplice) AS criminals, collect(DISTINCT cr) AS crimes
+        UNWIND criminals AS criminal
+        OPTIONAL MATCH (criminal)-[:COMMITTED]->(crime:Crime)
+        RETURN criminal, collect(DISTINCT crime) AS crimes
+
+
+            
+    """
+    params = {"criminalId": criminal_id}
+    results, _meta = db.cypher_query(query, params)
+    response = []
+    for node in results:
+        criminal_entity = CriminalEntity.inflate(node[0])
+        crimes = [CrimeEntity.inflate(crime).__dict__() for crime in node[1]]
+        
+        res = {
+            "criminal": criminal_entity.__dict__(),
+            "crimes": crimes,
         }
         response.append(res)
 
