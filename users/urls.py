@@ -11,5 +11,5 @@ urlpatterns = [
     path('password/reset/verify/',validate_reset_code,name='verify-reset-code'),
     path('password/reset/<str:grant_token>/',reset_password,name='reset-password'),
     path('user/',get_user,name='get-user'),
-
+    path('station/seed/',run_station_seeder,name='seed-stations'),
 ]

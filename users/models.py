@@ -25,16 +25,16 @@ class Station(models.Model):
 
 @receiver(post_save, sender=Station)
 def create_station_graph(sender, instance, created, **kwargs):
-    if created:
-        query = """
-        
-            CREATE (a:Station {longitude:$longitude, latitude:$latitude, name: $name, entity_id: $entity_id})
+    # if created:
+    query = """
+    
+        CREATE (a:Station {longitude:$longitude, latitude:$latitude, name: $name, entity_id: $entity_id})
 
-        """
-        results, meta = db.cypher_query(query, {'longitude':instance.location.x,'latitude':instance.location.y,'entity_id':instance.id,'name':instance.name}, resolve_objects=True)
+    """
+    results, meta = db.cypher_query(query, {'longitude':instance.location.x,'latitude':instance.location.y,'entity_id':instance.id,'name':instance.name}, resolve_objects=True)
 
-        # location_point = NeomodelPoint(Point(instance.location.x,instance.location.y))
-        # StationEntity(entity_id=instance.id, name=instance.name,location=location_point).save()
+    # location_point = NeomodelPoint(Point(instance.location.x,instance.location.y))
+    # StationEntity(entity_id=instance.id, name=instance.name,location=location_point).save()
 
 
 class CustomUserManager(BaseUserManager):

@@ -21,9 +21,9 @@ class CommitedRelationship(StructuredRel):
     __label__ = "Commited"
 
 class CriminalEntity(StructuredNode):
-    entity_id = IntegerProperty(unique_index=True)
+    # entity_id = IntegerProperty(unique_index=True)
     name = StringProperty()
-    nickname = StringProperty()
+    # nickname = StringProperty()
     date_of_birth = DateProperty()
     image_url = StringProperty()
     height = IntegerProperty()
@@ -34,9 +34,9 @@ class CriminalEntity(StructuredNode):
 
     def __dict__(self):
         properties = {
-            "entity_id": self.entity_id,
+            # "entity_id": self.entity_id,
             "name": self.name,
-            "nickname": self.nickname,
+            # "nickname": self.nickname,
             "dateOfBirth": self.date_of_birth.isoformat() if self.date_of_birth else None,
             "imageUrl": self.image_url,
             "height": self.height,

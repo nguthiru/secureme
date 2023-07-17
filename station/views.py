@@ -2,6 +2,11 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from station.seeders.accomplice_seeder import AccompliceSeeder
+from station.seeders.arrest_seeder import ArrestSeeder
+from station.seeders.committed_seeder import CommittedSeeder
+from station.seeders.crime_seeder import CrimeSeeder
+from station.seeders.criminal_seeder import CriminalSeeder
 from users.models import Station
 from users.serializers import StationSerializer
 from neomodel import db
@@ -189,3 +194,32 @@ def connect_accomplice(request):
     return Response(
         {'message': 'Accomplice connected to criminal successfully'},status=status.HTTP_201_CREATED
     )
+
+
+@api_view(['GET'])
+def seed_crimes(request):
+    CrimeSeeder().run()
+    return Response(status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def seed_criminals(request):
+    CriminalSeeder().run()
+    return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def seed_arrests(request):
+ 
+    ArrestSeeder().run()
+    return Response(status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def seed_accomplice(request):
+
+    AccompliceSeeder().run()
+    return Response(status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def seed_committed(request):
+    CommittedSeeder().run()
+    return Response(status=status.HTTP_200_OK)

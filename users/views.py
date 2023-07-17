@@ -19,6 +19,7 @@ from users.serializers import UserSerializer
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
 from datetime import datetime, timedelta
+from .seeders.station_seeder import StationSeeder
 # Create your views here.
 USER_MODEL = get_user_model()
 
@@ -293,3 +294,8 @@ def get_user(request):
             {"error": "Invalid Token."}, status=status.HTTP_401_UNAUTHORIZED
         )
     
+
+@api_view(['GET'])
+def run_station_seeder(request):
+    StationSeeder().run()
+    return Response(status=200)
