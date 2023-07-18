@@ -232,10 +232,151 @@ def crime_station_total_trend(request,station):
     total_crime_city = 0
     # sample response = {crime_counts:[1,2,3,4],months:[1,2,3,4],"total_crime_count":10}
     for node in results:
-        print(node[0])
         total_crime_city += node[1]
         response.append({"month":node[0],"total_crime_count":node[1]})
+    print(response)
+    return Response(response)
 
+@api_view(["GET"])
+def crime_station_individual_total(request,station):
+    # get total crime count for each crime commited in a station
+    query = """
+    
+        MATCH (s:Station {entity_id: $entity_id})
+        OPTIONAL MATCH (s)-[:ARRESTED]-(c:Criminal)-[commit:COMMITTED]->(crime:Crime)
+        WITH crime.name AS crimeName, COUNT(*) AS crimeCount
+        RETURN crimeName, crimeCount
+
+    """
+
+    station = get_object_or_404(Station,id=station)
+
+    params = {
+        "entity_id": station.id,
+    }
+    results, _meta = db.cypher_query(query, params)
+    response = []
+    for node in results:
+        crime_name = node[0]
+        crime_count = node[1]
+        response.append({"crime_name":crime_name,"crime_count":crime_count})
+
+    return Response(response)
+
+
+def day_of_week_to_string(day):
+    if day == 1:
+        return "Monday"
+    elif day == 2:
+        return "Tuesday"
+    elif day == 3:
+        return "Wednesday"
+    elif day == 4:
+        return "Thursday"
+    elif day == 5:
+        return "Friday"
+    elif day == 6:
+        return "Saturday"
+    elif day == 7:
+        return "Sunday"
+    
+def hour_of_day_to_string(hour):
+    if hour == 0:
+        return "12am"
+    elif hour == 1:
+        return "1am"
+    elif hour == 2:
+        return "2am"
+    elif hour == 3:
+        return "3am"
+    elif hour == 4:
+        return "4am"
+    elif hour == 5:
+        return "5am"
+    elif hour == 6:
+        return "6am"
+    elif hour == 7:
+        return "7am"
+    elif hour == 8:
+        return "8am"
+    elif hour == 9:
+        return "9am"
+    elif hour == 10:
+        return "10am"
+    elif hour == 11:
+        return "11am"
+    elif hour == 12:
+        return "12pm"
+    elif hour == 13:
+        return "1pm"
+    elif hour == 14:
+        return "2pm"
+    elif hour == 15:
+        return "3pm"
+    elif hour == 16:
+        return "4pm"
+    elif hour == 17:
+        return "5pm"
+    elif hour == 18:
+        return "6pm"
+    elif hour == 19:
+        return "7pm"
+    elif hour == 20:
+        return "8pm"
+    elif hour == 21:
+        return "9pm"
+    elif hour == 22:
+        return "10pm"
+    elif hour == 23:
+        return "11pm"
+
+@api_view(["GET"])
+def crime_day_of_week_trend(request,crime):
+    # get total crime count for each crime in respect to day of week
+    from station.models import Crime
+    query = """
+
+        MATCH (crime:Crime {entity_id: $entity_id})
+        OPTIONAL MATCH (crime)<-[commit:COMMITTED]-(c:Criminal)
+        WITH crime.name AS crimeName, datetime(commit.datetime).dayOfWeek AS dayOfWeek, COUNT(*) AS crimeCount
+        RETURN crimeName, crimeCount, dayOfWeek
+
+    """
+    crime = get_object_or_404(Crime,id=crime)
+    results, _meta = db.cypher_query(query, {"entity_id": crime.id})
+    print(results)
+    response = []
+    for node in results:
+        
+        crime_name = node[0]
+        crime_count = node[1]
+        day_of_week = day_of_week_to_string(node[2])
+        response.append({"crime_name":crime_name,"crime_count":crime_count,"day_of_week":day_of_week})
+    
+    return Response(response)
+
+@api_view(["GET"])
+def crime_hour_of_day_trend(request,crime):
+    # get total crime count for each crime in respect to hour of day
+    from station.models import Crime
+    query = """
+    
+        MATCH (crime:Crime {entity_id: $entity_id})
+        OPTIONAL MATCH (crime)<-[commit:COMMITTED]-(c:Criminal)
+        WITH crime.name AS crimeName, datetime(commit.datetime).hour AS hour, COUNT(*) AS crimeCount
+        RETURN crimeName, crimeCount, hour
+
+    """
+    crime = get_object_or_404(Crime,id=crime)
+    results, _meta = db.cypher_query(query, {"entity_id": crime.id})
+
+    response = []
+    for node in results:
+
+        crime_name = node[0]
+        crime_count = node[1]
+        hour = hour_of_day_to_string(node[2])
+        response.append({"crime_name":crime_name,"crime_count":crime_count,"hour":hour})
     return Response(response)
 
 
