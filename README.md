@@ -2,13 +2,13 @@
 
 ## A web-based platform aimed at easing the process of analysis and relationship detection in the current criminal system.
 
-This project is Django based and utilizes neo4js graph database capability to establish seamless co relations between crime data across a specified geographical location.
+This project is Django based and utilizes neo4js graph database capability to establish seamless co-relations between crime data across a specified geographical location.
 
 
 ### Abstract
-The aim of this project is to examine data regarding the spatial distribution of crimes committed within a specified geographical location- in this case the country kenya. Here data is collected from all spawning registered crimes from each police station and sent to one unified database.
+The aim of this project is to examine data regarding the spatial distribution of crimes committed within a specified geographical location- in this case, the country Kenya. Here data is collected from all spawning registered crimes from each police station and sent to one unified database.
 
-Therefore, we intend to apply algorithms and methods of analysis; geospatial, temporal, and network analysis to compile and visualize the relations in the antecedent of the crime, the present and help show via patterns the types of crime that are more likely to manifest.
+Therefore, we intend to apply algorithms and methods of analysis; geospatial, temporal, and network analysis to compile and visualize the relations in the antecedent of the crime, the present, and help show via patterns the types of crime that are more likely to manifest.
 
 
 ## Functional Requirements
@@ -18,7 +18,7 @@ For the above-mentioned project to run seamlessly and effectively one should hav
 
 1. **Python**: Install Python on your system. Django and the required libraries will be installed using Python's package manager, pip.
 
-2. **Django**: Install Django using pip. You can use the command `pip install django` to install the latest version.
+2. **Django**: Install Django using pip. You can use the command `pip install Django to install the latest version.
 
 3. **Neo4j**: Download and install Neo4j, the graph database management system, on your machine. Follow the installation instructions provided by Neo4j for your specific operating system.
 
