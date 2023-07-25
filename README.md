@@ -122,7 +122,7 @@ The crime mapping Django project incorporates Neo4j as the graph database and Dj
 
    ```python manage.py runserver```
 
-After completing this steps, you should be able to access the "Secure Me" Django project by opening your web browser and navigating to http://localhost:8000/
+After completing these steps, you should be able to access the "Secure Me" Django project by opening your web browser and navigating to http://localhost:8000/
  
 
 ### Relevant Sources.
