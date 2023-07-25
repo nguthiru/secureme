@@ -8,12 +8,12 @@ This project is Django based and utilizes neo4js graph database capability to es
 ### Abstract
 The aim of this project is to examine data regarding the spatial distribution of crimes committed within a specified geographical location- in this case, the country Kenya. Here data is collected from all spawning registered crimes from each police station and sent to one unified database.
 
-Therefore, we intend to apply algorithms and methods of analysis; geospatial, temporal, and network analysis to compile and visualize the relations in the antecedent of the crime, the present, and help show via patterns the types of crime that are more likely to manifest.
+Therefore, we intend to apply algorithms and methods of analysis; geospatial, temporal, and network analysis to compile and visualize the relations in the antecedent of the crime, and the present, and help show via patterns the types of crime that are more likely to manifest.
 
 
 ## Functional Requirements
 
-For the above-mentioned project to run seamlessly and effectively one should have the following:
+In order for the above-mentioned project to run seamlessly and effectively one should have the following:
 
 
 1. **Python**: Install Python on your system. Django and the required libraries will be installed using Python's package manager, pip.
